@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>virtual_mouse.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+virtual_mouse.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">cv2</span>
+<span class="s0">import </span><span class="s1">mediapipe </span><span class="s0">as </span><span class="s1">mp</span>
+<span class="s0">import </span><span class="s1">pyautogui</span>
+<span class="s1">cap = cv2.VideoCapture(</span><span class="s2">0</span><span class="s1">)</span>
+<span class="s1">hand_detector = mp.solutions.hands.Hands()</span>
+<span class="s1">drawing_utils = mp.solutions.drawing_utils</span>
+<span class="s1">screen_width</span><span class="s0">, </span><span class="s1">screen_height = pyautogui.size()</span>
+<span class="s1">index_y = </span><span class="s2">0</span>
+<span class="s0">while True</span><span class="s1">:</span>
+    <span class="s1">_</span><span class="s0">, </span><span class="s1">frame = cap.read()</span>
+    <span class="s1">frame = cv2.flip(frame</span><span class="s0">, </span><span class="s2">1</span><span class="s1">)</span>
+    <span class="s1">frame_height</span><span class="s0">, </span><span class="s1">frame_width</span><span class="s0">, </span><span class="s1">_ = frame.shape</span>
+    <span class="s1">rgb_frame = cv2.cvtColor(frame</span><span class="s0">, </span><span class="s1">cv2.COLOR_BGR2RGB)</span>
+    <span class="s1">output = hand_detector.process(rgb_frame)</span>
+    <span class="s1">hands = output.multi_hand_landmarks</span>
+
+    <span class="s0">if </span><span class="s1">hands:</span>
+        <span class="s0">for </span><span class="s1">hand </span><span class="s0">in </span><span class="s1">hands:</span>
+            <span class="s1">drawing_utils.draw_landmarks(frame</span><span class="s0">, </span><span class="s1">hand)</span>
+            <span class="s1">landmarks = hand.landmark</span>
+            <span class="s0">for </span><span class="s1">id</span><span class="s0">, </span><span class="s1">landmark </span><span class="s0">in </span><span class="s1">enumerate(landmarks):</span>
+                <span class="s1">x = int(landmark.x*frame_width)</span>
+                <span class="s1">y = int(landmark.y*frame_height)</span>
+                <span class="s0">if </span><span class="s1">id == </span><span class="s2">8</span><span class="s1">:</span>
+                    <span class="s1">cv2.circle(img=frame</span><span class="s0">, </span><span class="s1">center=(x</span><span class="s0">, </span><span class="s1">y)</span><span class="s0">, </span><span class="s1">radius=</span><span class="s2">10</span><span class="s0">, </span><span class="s1">color=(</span><span class="s2">0</span><span class="s0">, </span><span class="s2">255</span><span class="s0">, </span><span class="s2">255</span><span class="s1">))</span>
+                    <span class="s1">index_x = screen_width/frame_width*x</span>
+                    <span class="s1">index_y = screen_height/frame_height*y</span>
+
+                <span class="s0">if </span><span class="s1">id == </span><span class="s2">4</span><span class="s1">:</span>
+                    <span class="s1">cv2.circle(img=frame</span><span class="s0">, </span><span class="s1">center=(x</span><span class="s0">, </span><span class="s1">y)</span><span class="s0">, </span><span class="s1">radius=</span><span class="s2">10</span><span class="s0">, </span><span class="s1">color=(</span><span class="s2">0</span><span class="s0">, </span><span class="s2">255</span><span class="s0">, </span><span class="s2">255</span><span class="s1">))</span>
+                    <span class="s1">thumb_x = screen_width/frame_width*x</span>
+                    <span class="s1">thumb_y = screen_height/frame_height*y</span>
+                    <span class="s1">print(</span><span class="s3">'outside'</span><span class="s0">, </span><span class="s1">abs(index_y - thumb_y))</span>
+                    <span class="s0">if </span><span class="s1">abs(index_y - thumb_y) &lt; </span><span class="s2">20</span><span class="s1">:</span>
+                        <span class="s1">pyautogui.click()</span>
+                        <span class="s1">print(</span><span class="s3">&quot;click&quot;</span><span class="s1">)</span>
+                    <span class="s0">elif </span><span class="s1">abs(index_y - thumb_y) &lt; </span><span class="s2">100</span><span class="s1">:</span>
+                        <span class="s1">pyautogui.moveTo(index_x</span><span class="s0">, </span><span class="s1">index_y)</span>
+
+    <span class="s1">cv2.imshow(</span><span class="s3">'Virtual MOuse'</span><span class="s0">, </span><span class="s1">frame)</span>
+    <span class="s1">cv2.waitKey(</span><span class="s2">1</span><span class="s1">)</span>
+</pre>
+</body>
+</html>
